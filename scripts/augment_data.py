@@ -8,15 +8,17 @@ and saves the augmented images and labels in a new directory structure.
 import os  # for file handling
 import cv2  # for image processing
 import albumentations as A  # for data augmentation
-import random  # for shuffling data
-import shutil  # for copying files
-import numpy as np  # for numerical operations
-import matplotlib.pyplot as plt  # for visualizing augmented images and labels
 
-import tensorflow as tf  # for deep learning operations
-import tensorflow.keras as keras  # for building and training neural networks
-# for defining layers in the neural network
-from tensorflow.keras import layers
+# Not needed (for now)
+# import random  # for shuffling data
+# import shutil  # for copying files
+# import numpy as np  # for numerical operations
+# import matplotlib.pyplot as plt  # for visualizing augmented images and labels
+
+# import tensorflow as tf  # for deep learning operations
+# import tensorflow.keras as keras  # for building and training neural networks
+# # for defining layers in the neural network
+# from tensorflow.keras import layers
 
 
 # Main functions
@@ -84,9 +86,9 @@ def get_augmentation_pipeline():
     """
     return A.Compose(
         [
-            A.HorizontalFlip(p=0.5),
-            # Border mode replicate to avoid black borders after rotation
-            A.Rotate(limit=10, border_mode=cv2.BORDER_REPLICATE, p=0.5),
+            # A.HorizontalFlip(p=0.5),
+            # # Border mode replicate to avoid black borders after rotation
+            # A.Rotate(limit=10, border_mode=cv2.BORDER_REPLICATE, p=0.5),
             A.Affine(  # small random affine transformations to simulate different perspectives
                 scale=(0.9, 1.1),
                 # small translation to avoid losing too much of the image
@@ -101,6 +103,10 @@ def get_augmentation_pipeline():
                 contrast_limit=0.15,  # avoids drastic contrast changes
                 p=0.4
             ),
+            # invert colors with a low probability
+            A.InvertImg(p=0.1),
+            # apply Gaussian blur to simulate motion blur or out-of-focus images
+            A.GaussianBlur(blur_limit=(3, 7), p=0.2)
         ],
         bbox_params=A.BboxParams(  # specify the bounding boxes in YOLO format and how to handle them during augmentation
             format="yolo",
@@ -150,7 +156,16 @@ def process_train_folder(images_dir, labels_dir, num_augments=2):
         num_augments (int, optional): The number of augmentations to apply to each image. Defaults to 2.
     """
 
-    transform = get_augmentation_pipeline()  # get the defined augmentation pipeline
+    # get the defined augmentation pipeline
+    transform = get_augmentation_pipeline()
+
+    if not os.path.exists(images_dir):
+        print(f"Error: Images directory not found: {images_dir}")
+        return
+
+    if not os.path.exists(labels_dir):
+        print(f"Error: Labels directory not found: {labels_dir}")
+        return
 
     valid_exts = (".png", ".jpg", ".jpeg")  # valid image extensions
     image_files = [f for f in os.listdir(images_dir) if f.lower().endswith(
@@ -176,35 +191,35 @@ def process_train_folder(images_dir, labels_dir, num_augments=2):
         # if len(bboxes) == 0:
         #     continue
 
-    for i in range(num_augments):  # apply augmentations to the image and labels
-        try:
-            aug_image, aug_bboxes, aug_class_labels = augment_image_and_boxes(
-                image, bboxes, class_labels, transform)
+        for i in range(num_augments):  # apply augmentations to the image and labels
+            try:
+                aug_image, aug_bboxes, aug_class_labels = augment_image_and_boxes(
+                    image, bboxes, class_labels, transform)
 
-            # Save the augmented image and labels
+                # Save the augmented image and labels
 
-            # create a new name for the augmented image
-            aug_image_name = f"{stem}_aug_{i}.jpg"
-            # create a new name for the augmented label
-            aug_label_name = f"{stem}_aug_{i}.txt"
+                # create a new name for the augmented image
+                aug_image_name = f"{stem}_aug_{i}.jpg"
+                # create a new name for the augmented label
+                aug_label_name = f"{stem}_aug_{i}.txt"
 
-            # get the path to save the augmented image
-            aug_image_path = os.path.join(images_dir, aug_image_name)
-            # get the path to save the augmented label
-            aug_label_path = os.path.join(labels_dir, aug_label_name)
+                # get the path to save the augmented image
+                aug_image_path = os.path.join(images_dir, aug_image_name)
+                # get the path to save the augmented label
+                aug_label_path = os.path.join(labels_dir, aug_label_name)
 
-            # save the augmented image to disk
-            cv2.imwrite(aug_image_path, aug_image)
-            # save the augmented labels to disk
-            save_yolo_labels(aug_label_path, aug_class_labels, aug_bboxes)
+                # save the augmented image to disk
+                cv2.imwrite(aug_image_path, aug_image)
+                # save the augmented labels to disk
+                save_yolo_labels(aug_label_path, aug_class_labels, aug_bboxes)
 
-        except Exception as e:
-            print(f"Failed on {image_name} with error: {e}")
+            except Exception as e:
+                print(f"Failed on {image_name} with error: {e}")
 
 
 if __name__ == "__main__":
-    train_images_dir = "data/augmented/images/train"  # directory for training images
-    train_labels_dir = "data/augmented/labels/train"  # directory for training labels
+    train_images_dir = "data/images/train"  # directory for training images
+    train_labels_dir = "data/labels/train"  # directory for training labels
 
     # process the training folder with augmentations
     process_train_folder(train_images_dir, train_labels_dir, num_augments=2)

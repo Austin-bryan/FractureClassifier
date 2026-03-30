@@ -3,13 +3,13 @@ import os
 import shutil
 import random
 
-BASE_DIR = r'C:\Users\nbeli\FracDetectYolo' # <---- CHANGE FOR YOUR MACHINE
+BASE_DIR = r'C:\git_repos\FractureClassifier-jbcopy' # <---- CHANGE FOR YOUR MACHINE
 
 # CONFIGURATION
-CSV_PATH   = os.path.join(BASE_DIR, 'GRAZPEDWRI-DX', 'dataset.csv')
-SRC_IMAGES = os.path.join(BASE_DIR, 'source', 'images')
-SRC_LABELS = os.path.join(BASE_DIR, 'source', 'labels')
-DST_BASE   = os.path.join(BASE_DIR, 'GRAZPEDWRI-DX_7class_DataSplit', 'data')
+CSV_PATH   = os.path.join(BASE_DIR, 'data', 'dataset.csv')
+SRC_IMAGES = os.path.join(BASE_DIR, 'data', 'images')
+SRC_LABELS = os.path.join(BASE_DIR, 'data', 'labels')
+DST_BASE   = os.path.join(BASE_DIR, 'data', 'split_data')
 
 #C:\Users\nbeli\FracDetectYolo\
 #    ├── GRAZPEDWRI-DX
