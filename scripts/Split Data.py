@@ -273,7 +273,7 @@ for split_name in ['train', 'valid', 'test']:
         print(f"    Class {cls_id} {cls_name}: {n} boxes ({pct:.1f}%)")
     print(f"    Empty (no fracture): {empty} images")
 
-# Save manifest
+# Save manifest for tracking and inference grouping
 rows = []
 for split_name, filestems in splits.items():
     for f in filestems:

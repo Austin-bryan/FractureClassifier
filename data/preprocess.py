@@ -65,18 +65,18 @@ def main() -> None:
     # 1) Load CSV
     df = pd.read_csv(CSV_PATH)
 
-    # Normalize column names minimally (your dataset is already well-formed)
-    # This keeps your existing names, but strips accidental whitespace.
+    # Normalize column names minimally
+    # This keeps existing names, but strips accidental whitespace.
     df.columns = [c.strip() for c in df.columns]
 
-    # 2) Create an in-memory SQLite engine (no database file, disappears after run)
+    # 2) Create an in-memory SQLite engine
     engine = create_engine("sqlite+pysqlite:///:memory:", future=True)
 
     # 3) Load into SQL table
     df.to_sql("dataset", engine, if_exists="replace", index=False)
 
     # 4) Define table schema explicitly (NO reflection)
-    #    This matches the columns you showed earlier.
+    #    This matches the columns shown earlier.
     metadata = MetaData()
     dataset = Table(
         "dataset",
