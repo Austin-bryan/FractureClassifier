@@ -151,8 +151,8 @@ def process_train_folder(images_dir, labels_dir, num_augments=2):
     and saves the augmented images and labels in a new directory structure.
 
     Args:
-        images_dir (_type_): _description_
-        labels_dir (_type_): _description_
+        images_dir (_type_):
+        labels_dir (_type_):
         num_augments (int, optional): The number of augmentations to apply to each image. Defaults to 2.
     """
 
