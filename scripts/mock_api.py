@@ -81,5 +81,5 @@ def predict(req: PredictRequest):
     }
 
 
-# To run api: uvicorn mock_api:app --reload --port 8000
+# To run api: uvicorn scripts.mock_api:app --reload --port 8000
 # URL should look like this: http://127.0.0.1:8000/
