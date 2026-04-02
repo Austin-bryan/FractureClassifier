@@ -3,7 +3,7 @@ import os
 import shutil
 import random
 
-BASE_DIR = r'C:\git_repos\FractureClassifier-jbcopy' # <---- CHANGE FOR YOUR MACHINE
+# BASE_DIR = r'C:\git_repos\FractureClassifier-jbcopy' # <---- CHANGE FOR YOUR MACHINE
 
 # CONFIGURATION
 CSV_PATH   = os.path.join(BASE_DIR, 'data', 'dataset.csv')
@@ -273,7 +273,7 @@ for split_name in ['train', 'valid', 'test']:
         print(f"    Class {cls_id} {cls_name}: {n} boxes ({pct:.1f}%)")
     print(f"    Empty (no fracture): {empty} images")
 
-# Save manifest for tracking and inference grouping
+# Save manifest
 rows = []
 for split_name, filestems in splits.items():
     for f in filestems:
