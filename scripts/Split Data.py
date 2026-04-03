@@ -3,7 +3,7 @@ import os
 import shutil
 import random
 
-# BASE_DIR = r'C:\git_repos\FractureClassifier-jbcopy' # <---- CHANGE FOR YOUR MACHINE
+BASE_DIR = r'C:\git_repos\FractureClassifier-jbcopy' # <---- CHANGE FOR YOUR MACHINE
 
 # CONFIGURATION
 CSV_PATH   = os.path.join(BASE_DIR, 'data', 'dataset.csv')

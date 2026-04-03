@@ -87,7 +87,7 @@ def get_augmentation_pipeline():
     return A.Compose(
         [
             # A.HorizontalFlip(p=0.5),
-            # # Border mode replicate to avoid black borders after rotation
+            # Border mode replicate to avoid black borders after rotation
             # A.Rotate(limit=10, border_mode=cv2.BORDER_REPLICATE, p=0.5),
             A.Affine(  # small random affine transformations to simulate different perspectives
                 scale=(0.9, 1.1),

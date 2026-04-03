@@ -21,6 +21,14 @@ app.add_middleware( # Allows CORS to connect frontend and backend during develop
     allow_headers=["*"],
 )
 
+# Precompute class counts once
+all_codes = []
+for entry in df['ao_classification'].dropna():
+    all_codes.extend([c.strip() for c in str(entry).split(';') if c.strip()])
+
+class_counts = Counter(all_codes)
+max_class_count = max(class_counts.values()) if class_counts else 1
+
 # Root endpoint to verify API is running
 @app.get("/")
 def root():
@@ -66,20 +74,47 @@ def image_metadata(filestem: str):
 class PredictRequest(BaseModel):
     filestem: str
 
-# Looks up the AO classification from the dataset based on filestem.
+def mock_confidence(code: str, num_labels: int) -> float:
+# Generate a mock confidence score based on how common the code is and how many labels are present for the image
+    """
+    Create a mocked confidence score for frontend testing.
+    """
+    freq = class_counts.get(code, 1) / max_class_count
+
+    # Base confidence range: 0.62 to 0.90 depending on how common the code is
+    confidence = 0.62 + (freq * 0.28)
+
+    # Penalize multi-label predictions slightly by reducing confidence as the number of labels increases
+    confidence -= max(0, num_labels - 1) * 0.04
+
+    # Clamp to safe range and round
+    confidence = max(0.55, min(confidence, 0.93))
+    return round(confidence, 2)
+
+
+# This endpoint simulates predictions by looking up the AO classification codes for the given filestem
 @app.post("/predict")
 def predict(req: PredictRequest):
     row = df[df["filestem"] == req.filestem]
     if row.empty:
         raise HTTPException(status_code=404, detail="Image not found")
+
     labels = str(row.iloc[0]["ao_classification"])
     codes = [c.strip() for c in labels.split(';') if c.strip()] if labels and labels.lower() != "nan" else []
+
+    predictions = [ # Create a list of predictions with mock confidence scores
+        {
+            "code": c,
+            "confidence": mock_confidence(c, len(codes))
+        }
+        for c in codes
+    ]
+
     return {
         "filestem": req.filestem,
-        "predictions": [{"code": c, "confidence": 1.0} for c in codes],
+        "predictions": predictions,
         "num_labels": len(codes)
     }
-
 
 # To run api: uvicorn scripts.mock_api:app --reload --port 8000
 # URL should look like this: http://127.0.0.1:8000/
